@@ -22,4 +22,4 @@
 Чтобы запустить тесты, выполните следующую команду в терминале:
 ```bash
 mvn clean compile
-mvn test
+mvn clean test
