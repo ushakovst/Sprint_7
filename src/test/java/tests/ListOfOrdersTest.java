@@ -1,5 +1,6 @@
 package tests;
 
+import config.ApiClient;
 import io.qameta.allure.*;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.path.json.JsonPath;
@@ -11,7 +12,7 @@ import static org.junit.Assert.*;
 
 @Epic("API тесты для сервиса доставки") //раздел системы.
 @Feature("Список заказов") //компоненты
-public class ListOfOrdersTest extends BaseTest {
+public class ListOfOrdersTest extends ApiClient {
 
     @Test
     @Story("Получение списка заказов") //Тип сценариев

@@ -1,12 +1,10 @@
-package tests;
+package config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import config.ApiConfig;
-import config.OrderPOJO;
-import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.junit.BeforeClass;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,10 +12,16 @@ import java.util.Map;
 
 import static config.Endpoints.*;
 import static io.restassured.RestAssured.given;
+import static org.junit.Assume.assumeTrue;
 
-public class BaseTest extends ApiConfig {
+public class ApiClient{
 
-    @Step("Логин тестового курьера")
+    @BeforeClass
+    public static void checkApi() {
+        ApiConfig.init();
+        assumeTrue("API недоступен", ApiConfig.checkApiAvailable());
+    }
+
     protected Response loginTestCourier(String login, String password) {
         return given()
                 .header("Content-type", "application/json")
@@ -26,7 +30,6 @@ public class BaseTest extends ApiConfig {
                 .post(COURIER_LOGIN);
     }
 
-    @Step("Создание тестового курьера")
     protected Response createTestCourier(String login, String password, String name) {
         return given()
                 .header("Content-type", "application/json")
@@ -35,7 +38,6 @@ public class BaseTest extends ApiConfig {
                 .post(COURIER_CREATE);
     }
 
-    @Step("Создание тестового курьера с пустым полем логин")
     protected Response createTestCourierWithoutLogin(String password, String name) {
         return given()
                 .header("Content-type", "application/json")
@@ -44,7 +46,6 @@ public class BaseTest extends ApiConfig {
                 .post(COURIER_CREATE);
     }
 
-    @Step("Создание тестового курьера с пустым полем пароль")
     protected Response createTestCourierWithoutPassword(String login, String name) {
         return given()
                 .header("Content-type", "application/json")
@@ -53,7 +54,6 @@ public class BaseTest extends ApiConfig {
                 .post(COURIER_CREATE);
     }
 
-    @Step("Удаление тестового курьера")
     protected Response deleteTestCourier(String login, String password) {
         // Получаем ID курьера для удаления, а для этого сначала надо залогиниться
         Response loginResponse = loginTestCourier(login,password);
@@ -65,7 +65,6 @@ public class BaseTest extends ApiConfig {
                     .delete(COURIER_DELETE + "{id}");
     }
 
-    @Step("Создание тестового заказа")
     protected int createTestOrder(String[] colors) {
         Gson gson = new GsonBuilder().create();
         List<String> colorsList = colors != null ? Arrays.asList(colors) : null;
@@ -90,7 +89,6 @@ public class BaseTest extends ApiConfig {
         return response.jsonPath().getInt("track");
     }
 
-    @Step("Получение тестового заказа по трек-номеру")
     protected Response getTestOrder(int trackNumber) {
         return given()
                 .header("Content-type", "application/json")
@@ -99,7 +97,6 @@ public class BaseTest extends ApiConfig {
                 .get(RECEICE_AN_ORDER);
     }
 
-    @Step("Отмена тестового заказа по трек-номеру")
     protected Response cancelTestOrder(int track) {
         return given()
                 .contentType(ContentType.JSON)
@@ -108,7 +105,6 @@ public class BaseTest extends ApiConfig {
                 .put(CANCEL_AN_ORDER + "?track=" + "{track}"); // не получилось найти более "изящного" способа
     }
 
-    @Step("Получение списка заказов")
     protected Response getListOfOrders() {
         return given()
                 .header("Content-type", "application/json")

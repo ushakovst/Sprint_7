@@ -2,23 +2,24 @@ package config;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeTrue;
 
-public class ApiConfig {
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru";
+public final class ApiConfig {
+
+    private static final String BASE_URL = "https://qa-scooter.praktikum-services.ru";
+
+    private ApiConfig() {}
+
+    public static void init() {
+        RestAssured.baseURI = BASE_URL;
         RestAssured.filters(new AllureRestAssured());
     }
 
-    @BeforeClass
-    public static void checkApiAvailable() {
+    public static boolean checkApiAvailable() {
         try {
             given()
                     .baseUri("https://qa-scooter.praktikum-services.ru")
@@ -27,5 +28,6 @@ public class ApiConfig {
         } catch (Exception e) {
             assumeTrue("API недоступен: " + e.getMessage(), false);
         }
+        return true;
     }
 }

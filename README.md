@@ -17,6 +17,8 @@
 3. JUnit 4.13.2
 4. RestAssured 5.2.0
 5. Allure 2.24.0
+6. DataFaker 1.8.0
+7. Lombok 1.18.30 (так же необходимо, чтобы Lombok плагин был установлен в вашей IDE. Для IntelliJ IDEA: Settings → Plugins → Lombok)
 
 ## Запуск тестов
 Чтобы запустить тесты, выполните следующую команду в терминале:

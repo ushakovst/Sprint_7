@@ -1,5 +1,6 @@
 package tests;
 
+import config.ApiClient;
 import io.qameta.allure.*;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.path.json.JsonPath;
@@ -19,7 +20,7 @@ import static org.junit.Assert.*;
 @Epic("API тесты для сервиса доставки") //раздел системы.
 @Feature("Создание заказа") //компоненты
 @RunWith(Parameterized.class)
-public class CreateOrderParametrizedTest extends BaseTest {
+public class CreateOrderParametrizedTest extends ApiClient {
 
     private final String[] colors;
     private int trackNumber;
