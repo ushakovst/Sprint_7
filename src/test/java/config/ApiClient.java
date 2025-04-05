@@ -8,13 +8,14 @@ import org.junit.BeforeClass;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static config.Endpoints.*;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assume.assumeTrue;
 
 public class ApiClient{
+
+    private static final Gson gson = new GsonBuilder().create();
 
     @BeforeClass
     public static void checkApi() {
@@ -23,33 +24,56 @@ public class ApiClient{
     }
 
     protected Response loginTestCourier(String login, String password) {
+        CourierLoginPOJO request = CourierLoginPOJO.builder()
+                .login(login)
+                .password(password)
+                .build();
+
         return given()
-                .header("Content-type", "application/json")
-                .body(Map.of("login", login, "password", password))
+                .contentType(ContentType.JSON)
+                .body(gson.toJson(request))
                 .when()
                 .post(COURIER_LOGIN);
     }
 
     protected Response createTestCourier(String login, String password, String name) {
+        CourierCreatePOJO request = CourierCreatePOJO.builder()
+                .login(login)
+                .password(password)
+                .firstName(name)
+                .build();
+
         return given()
-                .header("Content-type", "application/json")
-                .body(Map.of("login", login, "password", password, "firstName", name))
+                .contentType(ContentType.JSON)
+                .body(gson.toJson(request))
                 .when()
                 .post(COURIER_CREATE);
     }
 
     protected Response createTestCourierWithoutLogin(String password, String name) {
+        CourierCreatePOJO request = CourierCreatePOJO.builder()
+                .login("")
+                .password(password)
+                .firstName(name)
+                .build();
+
         return given()
-                .header("Content-type", "application/json")
-                .body(Map.of("login", "", "password", password, "firstName", name))
+                .contentType(ContentType.JSON)
+                .body(gson.toJson(request))
                 .when()
                 .post(COURIER_CREATE);
     }
 
     protected Response createTestCourierWithoutPassword(String login, String name) {
+        CourierCreatePOJO request = CourierCreatePOJO.builder()
+                .login(login)
+                .password("")
+                .firstName(name)
+                .build();
+
         return given()
-                .header("Content-type", "application/json")
-                .body(Map.of("login", login, "password", "", "firstName", name))
+                .contentType(ContentType.JSON)
+                .body(gson.toJson(request))
                 .when()
                 .post(COURIER_CREATE);
     }
@@ -58,6 +82,7 @@ public class ApiClient{
         // Получаем ID курьера для удаления, а для этого сначала надо залогиниться
         Response loginResponse = loginTestCourier(login,password);
         String courierId = loginResponse.jsonPath().getString("id");
+
         return given()
                     .header("Content-type", "application/json")
                     .pathParam("id", courierId)
@@ -79,11 +104,10 @@ public class ApiClient{
                 "Test order",
                 colorsList
         );
-        String requestBody = gson.toJson(order);
-
+        //String requestBody = gson.toJson(order);
         Response response = given()
                 .header("Content-type", "application/json")
-                .body(requestBody)
+                .body(order)
                 .when()
                 .post(CREATING_AN_ORDER);
         return response.jsonPath().getInt("track");
